@@ -31,6 +31,10 @@ app.get('/signup', function(req, res) {
   res.render('signup');
 });
 
+app.get('/login', function(req, res) {
+  res.render('login');
+});
+
 app.get('/create', function(req, res) {
   res.render('index');
 });
@@ -75,7 +79,10 @@ app.post('/links', function(req, res) {
 // Write your authentication routes here
 /************************************************************/
 
-app.get('/login', function(req, res) {
+app.post('/login', function(req, res) {
+  util.checkUser(req.body.username, req.body.password, function(verified) {
+    
+  });
   res.render('login');
 });
 
@@ -89,14 +96,11 @@ app.post('/signup', function(req, res) {
         username: req.body.username,
         password: req.body.password
       }).then(function(newUser) {
-        res.sendStatus(201).send(newUser);
+        res.redirect('/');
       });
     }
-    
   });
   console.log('new user submitted!');
-  //res.end();
-  //res.render('signup');
 });
 /************************************************************/
 // Handle the wildcard route last - if all other routes fail
