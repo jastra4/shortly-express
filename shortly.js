@@ -23,25 +23,25 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 
 
-app.get('/', 
-function(req, res) {
+app.get('/', function(req, res) {
   res.render('index');
 });
 
-app.get('/create', 
-function(req, res) {
+app.get('/signup', function(req, res) {
+  res.render('signup');
+});
+
+app.get('/create', function(req, res) {
   res.render('index');
 });
 
-app.get('/links', 
-function(req, res) {
+app.get('/links', function(req, res) {
   Links.reset().fetch().then(function(links) {
     res.status(200).send(links.models);
   });
 });
 
-app.post('/links', 
-function(req, res) {
+app.post('/links', function(req, res) {
   var uri = req.body.url;
 
   if (!util.isValidUrl(uri)) {
@@ -63,8 +63,7 @@ function(req, res) {
           url: uri,
           title: title,
           baseUrl: req.headers.origin
-        })
-        .then(function(newLink) {
+        }).then(function(newLink) {
           res.status(200).send(newLink);
         });
       });
@@ -76,8 +75,29 @@ function(req, res) {
 // Write your authentication routes here
 /************************************************************/
 
+app.get('/login', function(req, res) {
+  res.render('login');
+});
 
-
+app.post('/signup', function(req, res) {
+  new User(req.body).fetch().then(function(found) {
+    if (found) {
+      res.setStatus(404);
+      res.end();
+    } else {
+      Users.create({
+        username: req.body.username,
+        password: req.body.password
+      }).then(function(newUser) {
+        res.sendStatus(201).send(newUser);
+      });
+    }
+    
+  });
+  console.log('new user submitted!');
+  //res.end();
+  //res.render('signup');
+});
 /************************************************************/
 // Handle the wildcard route last - if all other routes fail
 // assume the route is a short code and try and handle it here.

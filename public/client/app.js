@@ -9,10 +9,14 @@ window.Shortly = Backbone.View.extend({
   initialize: function() {
     console.log( 'Shortly is running' );
     $('body').append(this.render().el);
-
+    //if logged in
     this.router = new Shortly.Router({ el: this.$el.find('#container') });
     this.router.on('route', this.updateNav, this);
-
+    
+    //if not logged in
+    
+    //this.template = login.js
+    
     Backbone.history.start({ pushState: true });
   },
 
