@@ -28,14 +28,12 @@ app.use(session({
   secret: 'keyboard cat',
   resave: false,
   saveUninitialized: true
-  //cookie: { secure: true }
 }));
 
 var loggify = function(req, res, next) {
   if (req.session.user) {
     next();
   } else {
-    //console.log('not logged in');
     res.redirect('/login');
   }
 };
@@ -99,20 +97,14 @@ app.post('/links', function(req, res) {
 app.post('/login', function(req, res) {
   let { username, password } = req.body;
   new User(req.body.username).fetch().then(function(found) {
-    //console.log('username ', username, 'password ', password);
     
     if (found) {
       this.passwordVerify(req.body.password, function(verified) {
-        // if verified === false then redirect back to login
         if (!verified) {
           res.redirect('/login');
         } else {
-          //res.redirect('/');
-          // make new session
-          //req.session.regenerate(function() {
           req.session.user = req.body.username;
           res.redirect('/');
-          //});
         }
       });
 
@@ -130,7 +122,6 @@ app.post('/login', function(req, res) {
 app.post('/signup', function(req, res) {
   new User(req.body).fetch().then(function(found) {
     if (found) {
-      // console.log('found');
       res.setStatus(404);
       res.end();
     } else {
