@@ -88,7 +88,7 @@ app.post('/login', function(req, res) {
       this.passwordVerify(req.body.password, function(verified) {
         // if verified === false then redirect back to login
         if (!verified) {
-          res.redirect('/signup');
+          res.redirect('/login');
         } else {
           res.redirect('/');
         }
@@ -106,7 +106,6 @@ app.post('/login', function(req, res) {
 
 app.post('/signup', function(req, res) {
   new User(req.body).fetch().then(function(found) {
-    console.log(found);
     if (found) {
       // console.log('found');
       res.setStatus(404);
@@ -120,7 +119,6 @@ app.post('/signup', function(req, res) {
       });
     }
   });
-  console.log('new user submitted!');
 });
 /************************************************************/
 // Handle the wildcard route last - if all other routes fail
