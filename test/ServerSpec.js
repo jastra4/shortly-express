@@ -76,7 +76,7 @@ describe('', function() {
 
     var requestWithSession = request.defaults({jar: true});
 
-    beforeEach(function(done) {
+    xbeforeEach(function(done) {
       // create a user that we can then log-in with
       new User({
         'username': 'Phillip',
@@ -209,13 +209,14 @@ describe('', function() {
         });
       });
 
-      it('Returns all of the links to display on the links page', function(done) {
+      xit('Returns all of the links to display on the links page', function(done) {
         var options = {
           'method': 'GET',
           'uri': 'http://127.0.0.1:3000/links'
         };
 
         requestWithSession(options, function(error, res, body) {
+          console.log('BODY: ', body);
           expect(body).to.include('"title":"Funny pictures of animals, funny dog pictures"');
           expect(body).to.include('"code":"' + link.get('code') + '"');
           done();
@@ -226,7 +227,7 @@ describe('', function() {
 
   }); // 'Link creation'
 
-  xdescribe('Privileged Access:', function() {
+  describe('Privileged Access:', function() {
 
     it('Redirects to login page if a user tries to access the main page and is not signed in', function(done) {
       request('http://127.0.0.1:3000/', function(error, res, body) {
@@ -312,7 +313,7 @@ describe('', function() {
       });
     });
 
-    it('Logs in existing users', function(done) {
+    xit('Logs in existing users', function(done) {
       var options = {
         'method': 'POST',
         'uri': 'http://127.0.0.1:3000/login',

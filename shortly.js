@@ -2,7 +2,8 @@ var express = require('express');
 var util = require('./lib/utility');
 var partials = require('express-partials');
 var bodyParser = require('body-parser');
-
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
 
 var db = require('./app/config');
 var Users = require('./app/collections/users');
@@ -22,8 +23,24 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 
+app.use(cookieParser());
+app.use(session({
+  secret: 'keyboard cat',
+  resave: false,
+  saveUninitialized: true
+  //cookie: { secure: true }
+}));
 
-app.get('/', function(req, res) {
+var loggify = function(req, res, next) {
+  if (req.session.user) {
+    next();
+  } else {
+    //console.log('not logged in');
+    res.redirect('/login');
+  }
+};
+
+app.get('/', loggify, function(req, res) {
   res.render('index');
 });
 
@@ -35,11 +52,11 @@ app.get('/login', function(req, res) {
   res.render('login');
 });
 
-app.get('/create', function(req, res) {
+app.get('/create', loggify, function(req, res) {
   res.render('index');
 });
 
-app.get('/links', function(req, res) {
+app.get('/links', loggify, function(req, res) {
   Links.reset().fetch().then(function(links) {
     res.status(200).send(links.models);
   });
@@ -90,7 +107,12 @@ app.post('/login', function(req, res) {
         if (!verified) {
           res.redirect('/login');
         } else {
+          //res.redirect('/');
+          // make new session
+          //req.session.regenerate(function() {
+          req.session.user = req.body.username;
           res.redirect('/');
+          //});
         }
       });
 
@@ -98,11 +120,12 @@ app.post('/login', function(req, res) {
       res.redirect('/signup');
     }
   });  
-  
-  
-
-
 });
+
+// app.get('/logout', function(req, res) {
+//   // destroy session
+  
+// });
 
 app.post('/signup', function(req, res) {
   new User(req.body).fetch().then(function(found) {
