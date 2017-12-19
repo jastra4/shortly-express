@@ -80,15 +80,35 @@ app.post('/links', function(req, res) {
 /************************************************************/
 
 app.post('/login', function(req, res) {
-  util.checkUser(req.body.username, req.body.password, function(verified) {
+  let { username, password } = req.body;
+  new User(req.body.username).fetch().then(function(found) {
+    //console.log('username ', username, 'password ', password);
     
-  });
-  res.render('login');
+    if (found) {
+      this.passwordVerify(req.body.password, function(verified) {
+        // if verified === false then redirect back to login
+        if (!verified) {
+          res.redirect('/signup');
+        } else {
+          res.redirect('/');
+        }
+      });
+
+    } else {
+      res.redirect('/signup');
+    }
+  });  
+  
+  
+
+
 });
 
 app.post('/signup', function(req, res) {
   new User(req.body).fetch().then(function(found) {
+    console.log(found);
     if (found) {
+      // console.log('found');
       res.setStatus(404);
       res.end();
     } else {
